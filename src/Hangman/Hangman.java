@@ -2,6 +2,8 @@ package Hangman;
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.Random;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 public class Hangman {
@@ -24,19 +26,23 @@ public class Hangman {
             System.out.println("Input a letter:");
             String user = input.nextLine();
             int index = word.indexOf(user);
-//            System.out.println(check);
+            Pattern pattern = Pattern.compile("[a-z]");
+            Matcher matcher = pattern.matcher(user);
 
-            if (index < 0 || storage.contains(user)){
-                if (storage.contains(user)) {
-                    System.out.println("No improvements");
-                } else {
-                    System.out.println("Than letter doesn't appear in the word");
+            if (index < 0 || storage.contains(user) || (index == 0 && user.length() == 0)){
+                if (user.length() != 1) {                  // проверка на ввод одной буквы
+                    System.out.println("You should input a single letter");
+                } else if (!matcher.matches()) {           // проверка на ввод только маленьких букв
+                    System.out.println("Please enter a lowercase English letter");
+                } else if (storage.contains(user)) {       // проверка на повторение
+                    System.out.println("You already guessed this letter");
+                }else {
+                    System.out.println("That letter doesn't appear in the word");
+                    heart--;
                 }
                 storage.add(user);
-                heart--;
-//
+
             } else {
-//                boolean check_storage = storage.contains(user);
                 storage.add(user);
                 if (user.equals("a")){
                     user_word.insert(index, user);
@@ -48,7 +54,7 @@ public class Hangman {
                     user_word.delete(index + 1, index + 2);
                 }
                 if (word.contains(user_word)) {
-                    System.out.println(user_word + "\nYou guessed the word!\nYou survived!");
+                    System.out.println(user_word + "\nYou guessed the word " + user_word + "!\nYou survived!");
                     break;
                 }
             }
